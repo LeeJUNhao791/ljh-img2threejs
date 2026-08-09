@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>img2threejs Model Viewer</title>
+  <link rel="stylesheet" href="/src/style.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "/node_modules/three/build/three.module.js",
+      "three/addons/": "/node_modules/three/examples/jsm/",
+      "three/examples/jsm/controls/OrbitControls.js": "/node_modules/three/examples/jsm/controls/OrbitControls.js",
+      "three/examples/jsm/environments/RoomEnvironment.js": "/node_modules/three/examples/jsm/environments/RoomEnvironment.js",
+      "three/examples/jsm/postprocessing/EffectComposer.js": "/node_modules/three/examples/jsm/postprocessing/EffectComposer.js",
+      "three/examples/jsm/postprocessing/RenderPass.js": "/node_modules/three/examples/jsm/postprocessing/RenderPass.js",
+      "three/examples/jsm/postprocessing/BokehPass.js": "/node_modules/three/examples/jsm/postprocessing/BokehPass.js",
+      "three/examples/jsm/postprocessing/UnrealBloomPass.js": "/node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js",
+      "three/examples/jsm/postprocessing/OutputPass.js": "/node_modules/three/examples/jsm/postprocessing/OutputPass.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>img2threejs Model Viewer</h1>
+      <p>Viewer for generated Three.js 3D models</p>
+    </header>
+
+    <main>
+      <div id="canvas-container"></div>
+
+      <aside id="component-info" class="hidden" aria-live="polite">
+        <strong id="component-name"></strong>
+        <span id="component-kind"></span>
+        <span id="component-confidence"></span>
+      </aside>
+
+      <div id="controls">
+        <div class="control-group">
+          <button id="upload-btn" class="primary-btn">Upload Image</button>
+          <input type="file" id="image-input" accept="image/png,image/jpeg,image/webp" hidden>
+        </div>
+        <div class="control-group">
+          <label>Auto Rotate</label>
+          <input type="checkbox" id="auto-rotate" checked>
+        </div>
+        <div class="control-group">
+          <label>Wireframe</label>
+          <input type="checkbox" id="wireframe">
+        </div>
+        <div class="control-group">
+          <label>Background</label>
+          <input type="color" id="bg-color" value="#1a1a2e">
+        </div>
+      </div>
+
+      <div id="status-bar" class="hidden">
+        <span id="status-text">Ready</span>
+        <div id="progress-bar"><div id="progress-fill"></div></div>
+      </div>
+
+      <div id="info">
+        <p><strong>Controls:</strong></p>
+        <ul>
+          <li>Left click + drag: Rotate</li>
+          <li>Right click + drag: Pan</li>
+          <li>Scroll: Zoom</li>
+          <li>Click component: Select</li>
+          <li>Click empty space: Clear selection</li>
+        </ul>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
