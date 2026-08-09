@@ -61,5 +61,26 @@ function createMapTexture(
             )
 
 
+class ImageUploadFormatTests(unittest.TestCase):
+    def test_detects_supported_raster_formats_from_bytes(self):
+        detector = getattr(server, "detect_image_extension", None)
+        self.assertIsNotNone(detector, "detect_image_extension is not implemented")
+
+        self.assertEqual(detector(b"\x89PNG\r\n\x1a\nrest"), ".png")
+        self.assertEqual(detector(b"\xff\xd8\xffrest"), ".jpg")
+        self.assertEqual(detector(b"RIFF\x00\x00\x00\x00WEBPrest"), ".webp")
+
+    def test_rejects_svg_with_conversion_guidance(self):
+        detector = getattr(server, "detect_image_extension", None)
+        self.assertIsNotNone(detector, "detect_image_extension is not implemented")
+
+        with self.assertRaisesRegex(ValueError, "convert it to PNG or JPEG"):
+            detector(b'<svg xmlns="http://www.w3.org/2000/svg"></svg>')
+
+    def test_file_picker_lists_only_supported_raster_formats(self):
+        html = (server.DEMO_PATH / "index.html").read_text(encoding="utf-8")
+        self.assertIn('accept="image/png,image/jpeg,image/webp"', html)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -50,6 +50,30 @@ MIME_TYPES = {
     '.gltf': 'model/gltf+json',
 }
 
+
+class UnsupportedImageFormatError(ValueError):
+    """Raised when an upload is not a supported raster image."""
+
+
+def detect_image_extension(image_data: bytes) -> str:
+    """Return a safe suffix derived from the image byte signature."""
+    if image_data.startswith(b"\x89PNG\r\n\x1a\n"):
+        return ".png"
+    if image_data.startswith(b"\xff\xd8\xff"):
+        return ".jpg"
+    if len(image_data) >= 12 and image_data.startswith(b"RIFF") and image_data[8:12] == b"WEBP":
+        return ".webp"
+
+    prefix = image_data.lstrip()[:512].lower()
+    if prefix.startswith(b"<svg") or (prefix.startswith(b"<?xml") and b"<svg" in prefix):
+        raise UnsupportedImageFormatError(
+            "SVG uploads are not supported; convert it to PNG or JPEG"
+        )
+    raise UnsupportedImageFormatError(
+        "Unsupported image format; upload PNG, JPEG, or WebP"
+    )
+
+
 # Store generation status
 generation_status = {
     "status": "idle",
@@ -951,8 +975,9 @@ class PipelineRequestHandler(http.server.SimpleHTTPRequestHandler):
                         # Remove trailing boundary markers
                         image_data = image_data.rstrip(b'\r\n--')
 
+                        image_extension = detect_image_extension(image_data)
                         timestamp = int(time.time())
-                        image_path = PIC_PATH / f"input_{timestamp}.png"
+                        image_path = PIC_PATH / f"input_{timestamp}{image_extension}"
                         with open(image_path, 'wb') as f:
                             f.write(image_data)
 
@@ -965,6 +990,8 @@ class PipelineRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if not image_found:
                     self.send_error(400, "No image found in request")
 
+            except UnsupportedImageFormatError as e:
+                self.send_error(415, str(e))
             except ValueError as e:
                 self.send_json({"status": "error", "message": f"Invalid request: {str(e)}"}, 400)
             except Exception as e:
