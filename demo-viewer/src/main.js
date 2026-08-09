@@ -293,7 +293,7 @@ window.img2threejsViewer = {
   camera,
   renderer,
   controls,
-  
+
   addModel(modelGroup) {
     currentModelRoot = modelGroup;
     scene.add(modelGroup);
@@ -306,7 +306,7 @@ window.img2threejsViewer = {
     controls.target.copy(center);
     controls.update();
   },
-  
+
   clearScene() {
     clearComponentSelection();
     showComponentInfo(null);
